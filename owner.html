@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AgriShare Equipment Owner</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>AgriShare Owner Portal</h1>
+</header>
+
+<section>
+    <h2>Add Agricultural Equipment</h2>
+
+    <input id="ownerName" placeholder="Owner Name"><br><br>
+
+    <input id="equipment" placeholder="Equipment Name"><br><br>
+
+    <input id="price" type="number" placeholder="Rent Per Day"><br><br>
+
+    <input id="location" placeholder="Equipment Location"><br><br>
+
+    <button onclick="addEquipment()">Add Equipment</button>
+
+    <h2>My Equipment</h2>
+    <div id="equipmentList"></div>
+
+    <h2>Booking Requests</h2>
+    <div id="requests"></div>
+
+    <a href="index.html">Back to Home</a>
+</section>
+
+<script>
+function addEquipment() {
+    let owner = document.getElementById("ownerName").value.trim();
+    let name = document.getElementById("equipment").value.trim();
+    let price = Number(document.getElementById("price").value);
+    let location = document.getElementById("location").value.trim();
+
+    if (!owner || !name || price <= 0 || !location) {
+        alert("Enter all valid details");
+        return;
+    }
+
+    let items = JSON.parse(localStorage.getItem("equipment") || "[]");
+
+    items.push({
+        owner: owner,
+        name: name,
+        price: price,
+        location: location,
+        available: true
+    });
+
+    localStorage.setItem("equipment", JSON.stringify(items));
+
+    alert("Equipment Added Successfully!");
+
+    document.getElementById("equipment").value = "";
+    document.getElementById("price").value = "";
+    document.getElementById("location").value = "";
+
+    showEquipment();
+}
+
+function showEquipment() {
+    let items = JSON.parse(localStorage.getItem("equipment") || "[]");
+    let output = "";
+
+    items.forEach(function(item, i) {
+        output += "<p>" + item.name +
+            " - Rs." + item.price + "/day - " +
+            item.location +
+            " - " + (item.available ? "Available" : "Unavailable") +
+            " <button onclick='changeAvailability(" + i + ")'>Change Availability</button></p>";
+    });
+
+    document.getElementById("equipmentList").innerHTML =
+        output || "No equipment added yet.";
+}
+
+function changeAvailability(index) {
+    let items = JSON.parse(localStorage.getItem("equipment") || "[]");
+
+    items[index].available = !items[index].available;
+
+    localStorage.setItem("equipment", JSON.stringify(items));
+    showEquipment();
+}
+
+function showRequests() {
+    let bookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+    let output = "";
+
+    bookings.forEach(function(b) {
+        if (b.status !== "Cancelled") {
+            output += "<p>" + b.equipment +
+                " - Farmer: " + b.farmer +
+                " - Rs." + b.total + "</p>";
+        }
+    });
+
+    document.getElementById("requests").innerHTML =
+        output || "No booking requests yet.";
+}
+
+showEquipment();
+showRequests();
+</script>
+
+</body>
+</html>

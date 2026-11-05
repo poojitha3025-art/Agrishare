@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Farmer Registration</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>AgriShare Farmer Portal</h1>
+</header>
+
+<section>
+    <h2>Farmer Registration</h2>
+
+    <input id="name" placeholder="Enter Farmer Name"><br><br>
+
+    <input id="phone" placeholder="Enter Mobile Number"><br><br>
+
+    <input id="password" type="password"
+    placeholder="Create Password"><br><br>
+
+    <button onclick="register()">Register</button>
+
+    <hr>
+
+    <h2>Farmer Login</h2>
+
+    <input id="loginPhone" placeholder="Mobile Number"><br><br>
+
+    <input id="loginPass" type="password"
+    placeholder="Password"><br><br>
+
+    <button onclick="login()">Login</button>
+
+    <p id="message"></p>
+
+    <a href="index.html">Back to Home</a>
+</section>
+
+<script>
+function register() {
+    let name = document.getElementById("name").value;
+let phone = document.getElementById("phone").value;
+let password = document.getElementById("password").value;
+    if (!name || !/^\d{10}$/.test(phone) || !password) {
+        alert("Enter valid details");
+        return;
+    }
+
+    let farmers = JSON.parse(
+        localStorage.getItem("farmers") || "[]"
+    );
+
+    let existing = farmers.find(
+    f => String(f.phone).trim() === phone.trim()
+);
+
+if (existing) {
+    existing.name = name;
+    existing.password = password;
+} else {
+    farmers.push({name, phone, password});
+}
+
+    localStorage.setItem("farmers",
+        JSON.stringify(farmers));
+
+    alert("Registration Successful!");
+}
+
+function login() {
+    let phone = document.getElementById("loginPhone").value.trim();
+    let password = document.getElementById("loginPass").value.trim();
+
+    let farmers = JSON.parse(localStorage.getItem("farmers") || "[]");
+
+    let farmer = farmers.find(f =>
+        f.phone.trim() === phone &&
+        f.password === password
+    );
+
+    if (farmer) {
+        document.getElementById("message").innerText =
+            "Welcome " + farmer.name;
+    } else {
+        alert("Invalid Login Details");
+    }
+}
+</script>
+
+</body>
+</html>

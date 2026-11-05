@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AgriShare Farmer Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>AgriShare Farmer Dashboard</h1>
+</header>
+
+<section>
+    <h2>Welcome to AgriShare!</h2>
+    <p>Find and book agricultural equipment easily.</p>
+
+    <h2>Available Equipment</h2>
+    <button onclick="recommendEquipment()">Smart Equipment Recommendation</button>
+    <h3>Find Equipment Near You</h3>
+<input id="searchLocation" placeholder="Enter your location">
+<button onclick="searchNearbyEquipment()">Search</button>
+<div id="searchResults"></div>
+
+<img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=500" width="200">
+    
+
+    <h2>My Bookings</h2>
+    <div id="myBookings"></div>
+
+    <button onclick="logout()">Logout</button>
+</section>
+
+<script>
+
+// Display default and owner-added equipment
+function showEquipment() {
+
+    let equipment = [
+        {name: "Tractor", price: 1000, location: "Available"},
+        {name: "Harvester", price: 2000, location: "Available"},
+        {name: "Seed Drill", price: 800, location: "Available"}
+    ];
+
+    let ownerItems = JSON.parse(
+        localStorage.getItem("equipment") || "[]"
+    );
+
+    equipment = equipment.concat(
+        ownerItems.filter(item => item.available !== false)
+    );
+
+    let output = document.getElementById("equipmentList");
+    output.innerHTML = "";
+
+    equipment.forEach(function(item) {
+
+        let card = document.createElement("div");
+
+        let name = document.createElement("h3");
+        name.textContent = item.name;
+
+        let price = document.createElement("p");
+        price.textContent = "Rent: Rs." + item.price + "/day";
+
+        let location = document.createElement("p");
+        location.textContent = "Location: " + item.location;
+
+        let button = document.createElement("button");
+        button.textContent = "Book Now";
+
+        button.onclick = function() {
+            makeBooking(item.name, Number(item.price));
+        };
+
+        card.appendChild(name);
+        card.appendChild(price);
+        card.appendChild(location);
+        card.appendChild(button);
+
+        output.appendChild(card);
+    });
+}
+
+
+// Book equipment
+function makeBooking(name, rate) {
+
+    let farmer = prompt("Enter Farmer Name:");
+    if (!farmer) return;
+
+    let phone = prompt("Enter Mobile Number:");
+    if (!phone) return;
+
+    let location = prompt("Enter Farm Location:");
+    if (!location) return;
+
+    let days = Number(prompt("Enter Rental Days:"));
+
+    if (!Number.isInteger(days) || days <= 0) {
+        alert("Enter valid rental days");
+        return;
+    }
+
+    let bookings = JSON.parse(
+        localStorage.getItem("bookings") || "[]"
+    );
+
+    let total = rate * days;
+
+    bookings.push({
+        farmer: farmer,
+        phone: phone,
+        location: location,
+        equipment: name,
+        days: days,
+        total: total,
+        status: "Active"
+    });
+
+    localStorage.setItem("bookings", JSON.stringify(bookings));
+
+    alert("Booking Successful! Total: Rs." + total);
+
+    showBookings();
+}
+
+
+// Display bookings
+function showBookings() {
+
+    let bookings = JSON.parse(
+        localStorage.getItem("bookings") || "[]"
+    );
+
+    let output = document.getElementById("myBookings");
+    output.innerHTML = "";
+
+    if (bookings.length === 0) {
+        output.textContent = "No bookings yet.";
+        return;
+    }
+
+    bookings.forEach(function(b, i) {
+
+        let p = document.createElement("p");
+
+        p.textContent = b.equipment + " - " +
+            b.days + " days - Rs." +
+            b.total + " - Farmer: " + b.farmer +
+            " - " + b.status;
+
+        if (b.status !== "Cancelled") {
+
+            let button = document.createElement("button");
+            button.textContent = "Cancel";
+
+            button.onclick = function() {
+                cancelBooking(i);
+            };
+
+            p.appendChild(button);
+        }
+
+        output.appendChild(p);
+    });
+}
+
+
+// Cancel booking
+function cancelBooking(index) {
+
+    let bookings = JSON.parse(
+        localStorage.getItem("bookings") || "[]"
+    );
+
+    if (confirm("Are you sure you want to cancel this booking?")) {
+
+        bookings[index].status = "Cancelled";
+
+        localStorage.setItem(
+            "bookings",
+            JSON.stringify(bookings)
+        );
+
+        showBookings();
+    }
+}
+
+
+// Logout
+function logout() {
+    window.location.href = "farmer.html";
+}
+
+
+// Load dashboard
+showEquipment();
+function recommendEquipment() {
+    let budget = Number(prompt("Enter your budget per day:"));
+    let location = prompt("Enter your farm location:");
+
+    if (!budget || !location) return;
+
+    let equipment = [
+        {name: "Tractor", price: 1000, location: "All"},
+        {name: "Harvester", price: 2000, location: "All"},
+        {name: "Seed Drill", price: 800, location: "All"}
+    ];
+
+    let ownerItems = JSON.parse(localStorage.getItem("equipment") || "[]");
+
+    ownerItems.forEach(item => {
+        if (item.available) {
+            equipment.push({
+                name: item.name,
+                price: item.price,
+                location: item.location
+            });
+        }
+    });
+
+    let result = equipment.filter(item =>
+        item.price <= budget &&
+        (item.location === "All" ||
+        item.location.toLowerCase().includes(location.toLowerCase()))
+    );
+
+    if (result.length > 0) {
+        result.sort((a, b) => a.price - b.price);
+        alert("Best Recommendation: " + result[0].name +
+              "\nRent: Rs." + result[0].price + "/day");
+    } else {
+        alert("No suitable equipment found.");
+    }
+}
+showBookings();
+
+function searchNearbyEquipment() {
+    let location = document.getElementById("searchLocation").value.trim();
+    let items = JSON.parse(localStorage.getItem("equipment") || "[]");
+
+    let results = items.filter(item =>
+        item.available &&
+        item.location.toLowerCase().includes(location.toLowerCase())
+    );
+
+    let output = "";
+
+    results.forEach(item => {
+        output += "<p>" + item.name + " - Rs." + item.price + "/day</p>";
+    });
+
+    document.getElementById("searchResults").innerHTML =
+        output || "No equipment found in this location.";
+}
+
+</script>
+
+</body>
+</html>

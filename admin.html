@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AgriShare Admin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>AgriShare Admin Dashboard</h1>
+</header>
+
+<section id="equipment">
+    <h2>Booking Overview</h2>
+
+    <h3>Total Bookings: <span id="count">0</span></h3>
+
+    <h3>Total Revenue: ₹<span id="revenue">0</span></h3>
+
+    <h2>Farmer Booking Details</h2>
+
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Farmer</th>
+                <th>Phone</th>
+                <th>Location</th>
+                <th>Equipment</th>
+                <th>Days</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+
+        <tbody id="bookings"></tbody>
+    </table>
+
+    <br>
+    <a href="index.html">Back to Home</a>
+</section>
+
+<script src="admin.js"></script>
+</body>
+</html>

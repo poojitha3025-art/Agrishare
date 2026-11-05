@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AgriShare</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>🌱 AgriShare</h1>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#equipment">Equipment</a>
+            <a href="#about">About</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h2>Smart Farming, Easy Sharing</h2>
+        <p>Rent agricultural equipment easily
+        and make farming affordable.</p>
+
+        <button onclick="showMessage()">
+            Get Started
+        </button>
+    </section>
+
+    <section id="equipment">
+        <h2>Available Equipment</h2>
+
+        <div class="card">
+            <h3>🚜 Tractor</h3>
+            <p>Rent: ₹1000/day</p>
+            <button onclick="book('Tractor')">
+                Book Now
+            </button>
+        </div>
+
+        <div class="card">
+            <h3>🌾 Harvester</h3>
+            <p>Rent: ₹2000/day</p>
+            <button onclick="book('Harvester')">
+                Book Now
+            </button>
+        </div>
+
+        <div class="card">
+            <h3>🚜 Seed Drill</h3>
+            <p>Rent: ₹800/day</p>
+            <button onclick="book('Seed Drill')">
+                Book Now
+            </button>
+        </div>
+    </section>
+
+    <footer id="about">
+        <p>AgriShare © 2026</p>
+        <p>Empowering Farmers Through Technology</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
